@@ -11,7 +11,9 @@ import { ConfigService } from '@nestjs/config';
       useFactory: (config: ConfigService) => {
         return new Redis({
           host: config.get('REDIS_HOST'),
-          port: config.get<number>('REDIS_PORT'),
+          port: Number(config.get('REDIS_PORT')),
+          password: config.get('REDIS_PASSWORD'),
+          tls: {}, // Railway Redis uses TLS
         });
       },
     },
