@@ -10,7 +10,14 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.useGlobalInterceptors(new LoggingInterceptor());
   app.useGlobalFilters(new GlobalHttpExceptionFilter());
-  app.enableCors();
+  app.enableCors({
+    origin: '*',
+    credentials: true,
+  });
+
+  app.setGlobalPrefix('api');
+console.log("🔥 Global Prefix:", app.getHttpAdapter().getInstance()._globalPrefix);
+
 
   await app.listen(process.env.PORT || 3000);
 }

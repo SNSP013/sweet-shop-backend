@@ -29,18 +29,35 @@ export class AuthService {
   }
 
   async login(data: any) {
+    console.log("🔥 Trying login with email:", data.email);
+  
+    // Show ALL users in database
+    const allUsers = await this.usersService.findAll?.() || await (this as any).prisma?.user.findMany?.();
+    console.log("🔥 ALL USERS IN DB:", allUsers);
+  
     const user = await this.usersService.findByEmail(data.email);
-    if (!user) throw new UnauthorizedException('Invalid credentials');
-
+    console.log("🔥 USER FOUND:", user);
+  
+    if (!user) {
+      console.log("❌ No user found → Invalid credentials");
+      throw new UnauthorizedException('Invalid credentials');
+    }
+  
     const isMatch = await bcrypt.compare(data.password, user.password);
-    if (!isMatch) throw new UnauthorizedException('Invalid credentials');
-
+    console.log("🔥 PASSWORD MATCH:", isMatch);
+  
+    if (!isMatch) {
+      console.log("❌ Password mismatch → Invalid credentials");
+      throw new UnauthorizedException('Invalid credentials');
+    }
+  
     const token = await this.jwtService.signAsync({
       sub: user.id,
       email: user.email,
       role: user.role,
     });
-
+  
+    console.log("✅ LOGIN SUCCESS → Token generated");
     return { access_token: token };
   }
-}
+}  
